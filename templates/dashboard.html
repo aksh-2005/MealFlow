@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+
+{% block title %}MealFlow – Healthy Meals, Delivered Daily{% endblock %}
+
+{% block content %}
+
+<style>
+  body {
+    background-color: #f8fff9;
+  }
+
+  .dashboard-card {
+    background-color: white;
+    border: 1px solid #e8f5e9;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .action-card {
+    transition: 0.2s ease;
+    cursor: pointer;
+  }
+
+  .action-card:hover {
+    transform: translateY(-2px);
+    border-color: #198754;
+  }
+
+  .settings-row:hover {
+    background-color: #f8fff9;
+  }
+
+  .green-icon {
+    color: #198754;
+  }
+
+  #star-group i {
+    color: #ccc;
+  }
+
+  #star-group i.bi-star-fill {
+    color: #1D9E75;
+  }
+
+  .element:hover {
+    background-color: #f0faf5;
+  }
+
+  .hover-lift {
+    transition: 0.2s ease;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+</style>
+
+<div class="container py-4" style="max-width: 850px;">
+
+  <!-- Messages -->
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show rounded-3 mb-4" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Welcome -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-success">
+      Welcome {{ request.user.first_name }}
+    </h1>
+    <p class="text-muted mb-0">
+      Healthy meals delivered daily
+    </p>
+  </div>
+
+  <!-- Subscription -->
+  <section class="mb-5">
+    <h5 class="mb-3 text-success">Subscription</h5>
+
+    <div class="row g-3">
+
+      <!-- Plan -->
+      <div class="col-md-6">
+        <div class="dashboard-card hover-lift p-4 h-100">
+          <div class="text-muted small">Current Plan</div>
+          <div class="fw-semibold fs-4 mt-1 text-success">
+            {% if profile.subscription_active %}
+              {{ profile.plan_name }}
+            {% else %}
+              No Active Plan
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Validity -->
+      <div class="col-md-6">
+        <div class="dashboard-card hover-lift p-4 h-100">
+          <div class="text-muted small">Validity</div>
+          <div class="fw-semibold fs-4 mt-1 text-success">
+            {% if profile.subscription_active %}
+              {{ days_left }} Days Left
+            {% else %}
+              Inactive
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Meal Section -->
+  <section class="mb-5">
+    <h5 class="mb-3 text-success">Today's Meal – <span class="text-secondary fw-normal">{{ current_day }}</span></h5>
+
+    <div class="d-flex flex-column gap-3">
+
+      <!-- Breakfast -->
+      <div class="dashboard-card hover-lift p-3">
+        <div class="fw-semibold text-success">Breakfast</div>
+        <div class="text-muted">{{ today_meal.breakfast }}</div>
+        <small class="text-secondary">8:00 AM - 9:30 AM</small>
+      </div>
+
+      <!-- Lunch -->
+      <div class="dashboard-card hover-lift p-3">
+        <div class="fw-semibold text-success">Lunch</div>
+        <div class="text-muted">{{ today_meal.lunch }}</div>
+        <small class="text-secondary">12:30 PM - 2:00 PM</small>
+      </div>
+
+      <!-- Dinner -->
+      <div class="dashboard-card hover-lift p-3">
+        <div class="fw-semibold text-success">Dinner</div>
+        <div class="text-muted">{{ today_meal.dinner }}</div>
+        <small class="text-secondary">7:30 PM - 9:00 PM</small>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Quick Actions -->
+  <section class="mb-5">
+    <h5 class="mb-3 text-success">Quick Actions</h5>
+
+    <div class="row g-3">
+
+      <!-- Review -->
+      <div class="col-12 col-md-6">
+        <div class="dashboard-card action-card p-3 h-100 d-flex align-items-center gap-3"
+          data-bs-toggle="modal" data-bs-target="#ratingModal">
+          <div class="rounded-3 p-2" style="background:#f0faf5;">
+            <i class="bi bi-emoji-smile fs-4 green-icon"></i>
+          </div>
+          <div class="fw-semibold small">Review Meal</div>
+        </div>
+      </div>
+
+      <!-- Rating Modal -->
+      <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-4 border-0" style="box-shadow: 0 8px 30px rgba(0,0,0,0.1);">
+
+            <div class="modal-header border-0 pb-0">
+              <div>
+                <h6 class="modal-title fw-semibold mb-0">Rate Your Meal</h6>
+                <small class="text-muted">How was your meal today?</small>
+              </div>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form method="POST" action="{% url 'review_meal' %}">
+              {% csrf_token %}
+
+              <div class="modal-body text-center pt-3">
+
+                <!-- Stars -->
+                <div class="d-flex justify-content-center gap-3 mb-4" id="star-group">
+                  <i class="bi bi-star" style="cursor:pointer; font-size:2.2rem;" data-val="1"></i>
+                  <i class="bi bi-star" style="cursor:pointer; font-size:2.2rem;" data-val="2"></i>
+                  <i class="bi bi-star" style="cursor:pointer; font-size:2.2rem;" data-val="3"></i>
+                  <i class="bi bi-star" style="cursor:pointer; font-size:2.2rem;" data-val="4"></i>
+                  <i class="bi bi-star" style="cursor:pointer; font-size:2.2rem;" data-val="5"></i>
+                </div>
+                <input type="hidden" name="rating" id="rating-val">
+
+                <!-- Comment -->
+                <textarea name="comment" class="form-control rounded-3 border-0" rows="3"
+                  placeholder="Write your feedback (optional)..." style="background:#f8fff9; resize:none;"></textarea>
+
+              </div>
+
+              <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary px-4"
+                  data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-sm text-white px-4" style="background:#1D9E75;">Submit</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Report -->
+      <div class="col-12 col-md-6">
+        <a href="{% url 'report_issue' %}" class="text-decoration-none">
+          <div class="dashboard-card action-card p-3 h-100 d-flex align-items-center gap-3">
+            <div class="rounded-3 p-2" style="background:#fff5f5;">
+              <i class="bi bi-exclamation-triangle fs-4 text-danger"></i>
+            </div>
+            <div class="fw-semibold small text-danger">Report Issue</div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Account & Settings -->
+  <section>
+    <h5 class="mb-3 text-success">Account & Settings</h5>
+
+    <div class="dashboard-card overflow-hidden">
+
+      <!-- Meal Preferences -->
+      <div class="settings-row d-flex align-items-center justify-content-between p-3 border-bottom"
+        data-bs-toggle="modal" data-bs-target="#mealPrefModal" style="cursor:pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-egg-fried fs-5 green-icon"></i>
+          <div>
+            <div class="fw-semibold">Meal Preferences</div>
+            <small class="text-muted">{{ profile.meal_preference }}</small>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+      </div>
+
+      <!-- Meal Preferences Modal -->
+      <div class="modal fade" id="mealPrefModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-4">
+
+            <div class="modal-header border-0">
+              <h6 class="modal-title fw-semibold">Meal Preferences</h6>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form method="POST" action="{% url 'edit_meal_preference' %}">
+              {% csrf_token %}
+
+              <div class="modal-body pt-0">
+                <p class="text-muted small mb-3">Select your diet type</p>
+
+                <div class="list-group list-group-flush">
+                  <label class="list-group-item d-flex gap-2 align-items-start">
+                    <input class="form-check-input mt-1" type="radio" name="diet" value="Veg"
+                      {% if profile.meal_preference == "Veg" %}checked{% endif %}>
+                    <div>Veg <small class="d-block text-muted">Includes dairy & plant-based foods only</small></div>
+                  </label>
+                  <label class="list-group-item d-flex gap-2 align-items-start">
+                    <input class="form-check-input mt-1" type="radio" name="diet" value="Non-Veg"
+                      {% if profile.meal_preference == "Non-Veg" %}checked{% endif %}>
+                    <div>Non-Veg <small class="d-block text-muted">Includes chicken, fish, eggs & meat</small></div>
+                  </label>
+                </div>
+              </div>
+
+              <div class="modal-footer border-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-sm text-white" style="background:#1D9E75;">Save</button>
+              </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery Address -->
+      <div class="settings-row d-flex align-items-center justify-content-between p-3 border-bottom">
+        <a href="{% url 'edit_address' %}"
+          class="text-decoration-none text-dark d-flex justify-content-between align-items-center w-100">
+          <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-geo-alt fs-5 green-icon"></i>
+            <div>
+              <div class="fw-semibold">Delivery Address</div>
+              <small class="text-muted">
+                {{ profile.address }} • {{ profile.pincode }}
+              </small>
+            </div>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+
+      <!-- Billing -->
+      <div class="settings-row d-flex align-items-center justify-content-between p-3 border-bottom"
+        data-bs-toggle="modal" data-bs-target="#billingModal" style="cursor:pointer;">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-credit-card fs-5 green-icon"></i>
+          <div>
+            <div class="fw-semibold">Billing & Payments</div>
+            <small class="text-muted">
+              {% if profile.last_amount_paid %}
+                Last paid ₹{{ profile.last_amount_paid }}
+              {% else %}
+                No payments recorded
+              {% endif %}
+            </small>
+          </div>
+        </div>
+        <i class="bi bi-chevron-right text-muted"></i>
+      </div>
+
+      <!-- Billing & Payments Modal -->
+      <div class="modal fade" id="billingModal" tabindex="-1" aria-labelledby="billingModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content rounded-4 border-0 shadow">
+            <div class="modal-header border-bottom-0 pb-0">
+              <h5 class="modal-title fw-bold text-success" id="billingModalLabel">Billing & Payments</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3">
+              {% if profile.subscription_active %}
+                <div class="bg-success bg-opacity-10 rounded-3 p-3 mb-3 text-center">
+                  <p class="mb-1 text-secondary small text-uppercase fw-bold">Active Plan</p>
+                  <h4 class="fw-bold mb-0 text-success">{{ profile.plan_name }}</h4>
+                  <span class="fs-6 text-muted mt-1 d-block">
+                    Expires on {{ profile.subscription_expiry|date:"F d, Y" }} ({{ days_left }} days left)
+                  </span>
+                </div>
+
+                <div class="list-group list-group-flush small mb-3">
+                  <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Last Amount Paid:</span>
+                    <span class="fw-semibold text-dark">₹{{ profile.last_amount_paid }}</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Payment Provider:</span>
+                    <span class="fw-semibold text-dark">Stripe</span>
+                  </div>
+                  <div class="list-group-item d-flex justify-content-between px-0 py-2">
+                    <span class="text-muted">Billing Cycle:</span>
+                    <span class="fw-semibold text-dark">Prepaid / Non-recurring</span>
+                  </div>
+                </div>
+              {% else %}
+                <div class="bg-danger bg-opacity-10 rounded-3 p-4 mb-3 text-center">
+                  <i class="bi bi-exclamation-octagon text-danger fs-1 mb-2"></i>
+                  <h5 class="fw-bold text-danger mb-1">No Active Plan</h5>
+                  <p class="small text-muted mb-0">Subscribe to one of our plans to start receiving daily meals.</p>
+                </div>
+              {% endif %}
+            </div>
+            <div class="modal-footer border-top-0 pt-0">
+              <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill"
+                data-bs-dismiss="modal">Close</button>
+              {% if profile.subscription_active %}
+                <a href="{% url 'plans' %}" class="btn btn-success btn-sm px-4 rounded-pill fw-semibold">View Other Plans</a>
+              {% else %}
+                <a href="{% url 'plans' %}" class="btn btn-danger btn-sm px-4 rounded-pill fw-semibold">View Meal Plans</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile & Security -->
+      <div class="settings-row d-flex align-items-center justify-content-between p-3 border-bottom">
+        <a href="{% url 'edit_pass' %}"
+          class="text-decoration-none text-dark d-flex justify-content-between align-items-center w-100">
+          <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-shield-lock fs-5 green-icon"></i>
+            <div>
+              <div class="fw-semibold">Security</div>
+              <small class="text-muted">Change password</small>
+            </div>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+
+      <!-- Support -->
+      <div class="settings-row d-flex align-items-center justify-content-between p-3">
+        <a href="https://wa.me/" target="_blank" rel="noopener noreferrer"
+          class="text-decoration-none text-dark d-flex justify-content-between align-items-center w-100">
+          <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-chat-dots fs-5 green-icon"></i>
+            <div>
+              <div class="fw-semibold">Support</div>
+              <small class="text-muted">Chat on WhatsApp</small>
+            </div>
+          </div>
+          <i class="bi bi-chevron-right text-muted"></i>
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<script>
+  const stars = document.querySelectorAll('#star-group i');
+
+  stars.forEach(star => {
+    star.addEventListener('click', function () {
+      const val = +this.dataset.val;
+      document.getElementById('rating-val').value = val;
+
+      stars.forEach(s => {
+        s.classList.remove('bi-star-fill', 'bi-star');
+        s.classList.add(+s.dataset.val <= val ? 'bi-star-fill' : 'bi-star');
+      });
+    });
+  });
+</script>
+
+{% endblock %}

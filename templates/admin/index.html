@@ -1,0 +1,151 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+    <div class="mb-8">
+        <!-- Dashboard Welcome Header -->
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6">MealFlow Operational Dashboard</h1>
+
+        <!-- Stats Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- Active Subscribers Card -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Active Subscribers</p>
+                    <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">{{ active_subscribers }}</p>
+                </div>
+                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Revenue Card -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Payments Got</p>
+                    <p class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1">₹{{ total_payments }}</p>
+                </div>
+                <div class="p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg text-emerald-600 dark:text-emerald-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Rating Card -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Avg Meal Rating</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <p class="text-3xl font-extrabold text-amber-500 dark:text-amber-400">{{ average_score }} ★</p>
+                        <p class="text-xs text-gray-400">({{ review_count }} reviews)</p>
+                    </div>
+                </div>
+                <div class="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg text-amber-500 dark:text-amber-400">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.907c.961 0 1.36 1.25.591 1.813l-3.97 2.883a1 1 0 00-.364 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.971-2.883a1 1 0 00-1.176 0l-3.97 2.883c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.364-1.118L2.98 10.364c-.768-.563-.369-1.813.591-1.813h4.907a1 1 0 00.95-.69l1.519-4.674z"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphical representations -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Meal Preference Breakdown Chart -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Meal Preference Distribution</h3>
+                <div style="position: relative; height:250px; width:100%;">
+                    <canvas id="prefChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Support Issues Chart -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">Reported Support Issues</h3>
+                <div style="position: relative; height:250px; width:100%;">
+                    <canvas id="issueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js and Custom Script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Dark mode detection
+            const isDark = document.documentElement.classList.contains("dark");
+            const textColor = isDark ? "#9ca3af" : "#4b5563";
+            const gridColor = isDark ? "#374151" : "#e5e7eb";
+
+            // 1. Meal Preference Chart (Pie/Doughnut)
+            const prefCtx = document.getElementById("prefChart").getContext("2d");
+            new Chart(prefCtx, {
+                type: "doughnut",
+                data: {
+                    labels: {{ pref_labels|safe }},
+                    datasets: [{
+                        data: {{ pref_data|safe }},
+                        backgroundColor: ["#10b981", "#3b82f6", "#ef4444", "#f59e0b", "#6366f1"],
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            labels: {
+                                color: textColor,
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 2. Issue Chart (Bar)
+            const issueCtx = document.getElementById("issueChart").getContext("2d");
+            new Chart(issueCtx, {
+                type: "bar",
+                data: {
+                    labels: {{ issue_labels|safe }},
+                    datasets: [{
+                        data: {{ issue_data|safe }},
+                        backgroundColor: "#10b981",
+                        borderColor: "#059669",
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                precision: 0,
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+    <!-- Render default Unfold models list below charts -->
+    <div class="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
+        {{ block.super }}
+    </div>
+{% endblock %}

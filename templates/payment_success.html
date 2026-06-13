@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block title %}MealFlow – Payment Successful!{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f7faf8;
+  }
+  .success-card {
+    background: #ffffff;
+    border: 1px solid #e2ebd5;
+    border-radius: 24px;
+    box-shadow: 0 10px 30px rgba(29, 158, 117, 0.05);
+    overflow: hidden;
+    max-width: 550px;
+    margin: 40px auto;
+  }
+  .success-header {
+    background: linear-gradient(135deg, #1D9E75, #146e52);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+    position: relative;
+  }
+  .success-icon {
+    font-size: 4rem;
+    animation: scaleUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .receipt-table {
+    font-size: 0.95rem;
+  }
+  .receipt-table th {
+    font-weight: 500;
+    color: #718096;
+  }
+  .receipt-table td {
+    font-weight: 600;
+    color: #2d3748;
+    text-align: right;
+  }
+  .btn-dashboard {
+    background-color: #1D9E75;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px 24px;
+    transition: all 0.2s ease;
+    border: none;
+    display: inline-block;
+    text-decoration: none;
+  }
+  .btn-dashboard:hover {
+    background-color: #146e52;
+    color: white;
+  }
+  @keyframes scaleUp {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="success-card">
+    
+    <!-- Success Header -->
+    <div class="success-header">
+      <div class="success-icon mb-3">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h2 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Payment Successful!</h2>
+      <p class="mb-0 opacity-75">Thank you for subscribing to MealFlow</p>
+    </div>
+
+    <!-- Success Body -->
+    <div class="p-4 p-md-5">
+      <h5 class="fw-bold mb-4 text-center" style="color: #2d3748;">Subscription Summary</h5>
+      
+      <table class="table table-borderless receipt-table mb-4">
+        <tbody>
+          <tr class="border-bottom pb-2">
+            <th scope="row" class="ps-0 py-3">Plan Subscribed</th>
+            <td class="pe-0 py-3 text-success fw-bold">{{ plan_name }}</td>
+          </tr>
+          <tr class="border-bottom pb-2">
+            <th scope="row" class="ps-0 py-3">Price Paid</th>
+            <td class="pe-0 py-3">₹{{ price }}</td>
+          </tr>
+          <tr class="border-bottom pb-2">
+            <th scope="row" class="ps-0 py-3">Duration</th>
+            <td class="pe-0 py-3">{{ days }} Days</td>
+          </tr>
+          <tr class="border-bottom pb-2">
+            <th scope="row" class="ps-0 py-3">Expiry Date</th>
+            <td class="pe-0 py-3">{{ expiry|date:"F d, Y" }}</td>
+          </tr>
+          <tr>
+            <th scope="row" class="ps-0 py-3">Payment Provider</th>
+            <td class="pe-0 py-3 text-muted" style="font-size: 0.85rem;">Stripe (Sandbox)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Success Action Alert -->
+      <div class="alert alert-success border-0 rounded-3 p-3 mb-5 d-flex gap-3 align-items-center">
+        <i class="bi bi-info-circle-fill text-success fs-4"></i>
+        <div class="small text-success">
+          Your kitchen preferences are updated and meal deliveries will start tomorrow based on your address details.
+        </div>
+      </div>
+
+      <!-- Button -->
+      <div class="text-center">
+        <a href="{% url 'dashboard' %}" class="btn-dashboard w-100 py-3">
+          Go to Dashboard <i class="bi bi-arrow-right ms-2"></i>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+{% endblock %}

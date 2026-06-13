@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Register | MealFlow{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <!-- Heading -->
+      <div class="text-center mb-4">
+        <h1 class="fw-bold text-success">MealFlow</h1>
+        <p class="text-muted">Healthy meals delivered daily</p>
+      </div>
+
+      <!-- Register Card -->
+      <div class="card border-success shadow-sm rounded-4">
+        <div class="card-body p-4 p-md-5">
+          <div class="text-center mb-4">
+            <h3 class="fw-bold">Create Account</h3>
+            <p class="text-muted small">
+              Join MealFlow and start your healthy lifestyle
+            </p>
+          </div>
+
+          <!-- Error -->
+          {% if error %}
+          <div class="alert alert-danger mt-4 mb-0">{{ error }}</div>
+          {% endif %}
+
+          <!-- Form -->
+          <form method="POST">
+            {% csrf_token %}
+
+            <!-- Full Name -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-person-badge text-success"></i>
+                </span>
+                <input
+                  type="text"
+                  name="full_name"
+                  class="form-control"
+                  placeholder="Enter full name"
+                  value="{{ full_name|default:'' }}"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Username -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Username</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-person text-success"></i>
+                </span>
+                <input
+                  type="text"
+                  name="username"
+                  class="form-control"
+                  placeholder="Choose username"
+                  value="{{ username|default:'' }}"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Email Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-envelope text-success"></i>
+                </span>
+                <input
+                  type="email"
+                  name="email"
+                  class="form-control"
+                  placeholder="Enter email"
+                  value="{{ email|default:'' }}"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Phone Number</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-telephone text-success"></i>
+                </span>
+                <input
+                  type="tel"
+                  name="phone"
+                  class="form-control"
+                  placeholder="Enter phone number"
+                  value="{{ phone|default:'' }}"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Address -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Delivery Address</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-geo-alt text-success"></i>
+                </span>
+                <textarea
+                  name="address"
+                  class="form-control"
+                  rows="3"
+                  placeholder="Enter delivery address"
+                  required
+                >{{ address|default:'' }}</textarea>
+              </div>
+            </div>
+
+            <!-- Pincode -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Delivery Pincode</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-geo-alt text-success"></i>
+                </span>
+                <input
+                  name="pincode"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]{6}"
+                  maxlength="6"
+                  class="form-control"
+                  oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                  placeholder="Enter delivery pincode"
+                  value="{{ pincode|default:'' }}"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Meal Preference -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold">Meal Preference</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-egg-fried text-success"></i>
+                </span>
+                <select name="meal_preference" class="form-select" required>
+                  <option value="">Select preference</option>
+                  <option {% if meal_preference == "Veg" %}selected{% endif %}>Veg</option>
+                  <option {% if meal_preference == "Non-Veg" %}selected{% endif %}>Non-Veg</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white">
+                  <i class="bi bi-lock text-success"></i>
+                </span>
+                <input
+                  type="password"
+                  name="password"
+                  class="form-control"
+                  placeholder="Create password"
+                  required
+                />
+              </div>
+            </div>
+
+            <!-- Register Button -->
+            <button
+              type="submit"
+              class="btn btn-success w-100 py-2 fw-semibold rounded-3"
+            >
+              Create Account
+            </button>
+          </form>
+
+          <!-- Login -->
+          <div class="text-center mt-4">
+            <small class="text-muted">Already have an account?</small>
+            <a href="{% url 'login' %}" class="text-success text-decoration-none fw-semibold">
+              Login
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

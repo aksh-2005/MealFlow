@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+
+{% block title %}MealFlow – Subscription Plans & Menu{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f7faf8;
+  }
+  .pricing-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #e2ebd5;
+    background-color: white;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(29, 158, 117, 0.12);
+    border-color: #1D9E75;
+  }
+  .pricing-card.popular {
+    border: 2px solid #1D9E75;
+  }
+  .popular-badge {
+    position: absolute;
+    top: 15px;
+    right: -30px;
+    background: #1D9E75;
+    color: white;
+    padding: 4px 30px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    transform: rotate(45deg);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .menu-table th {
+    background-color: #1D9E75;
+    color: white;
+    font-weight: 600;
+  }
+  .menu-table td {
+    vertical-align: middle;
+  }
+  .menu-day-badge {
+    background-color: #eefbf7;
+    color: #1D9E75;
+    font-weight: 700;
+    border: 1px solid #d4f2e8;
+  }
+  .checkmark-list {
+    list-style: none;
+    padding-left: 0;
+  }
+  .checkmark-list li {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 12px;
+    font-size: 0.92rem;
+    color: #4a5568;
+  }
+  .checkmark-list li::before {
+    content: "\F272"; /* Bootstrap Icon check-circle-fill */
+    font-family: "bootstrap-icons";
+    position: absolute;
+    left: 0;
+    color: #1D9E75;
+    font-size: 1.1rem;
+    top: -1px;
+  }
+  .btn-subscribe {
+    background-color: #1D9E75;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.2s ease;
+    border: none;
+  }
+  .btn-subscribe:hover {
+    background-color: #146e52;
+    color: white;
+  }
+  .btn-outline-subscribe {
+    background-color: transparent;
+    color: #1D9E75;
+    font-weight: 600;
+    border: 2px solid #1D9E75;
+    border-radius: 12px;
+    padding: 12px;
+    transition: all 0.2s ease;
+  }
+  .btn-outline-subscribe:hover {
+    background-color: #1D9E75;
+    color: white;
+  }
+  .card-pill {
+    background-color: #f0faf5;
+    color: #1D9E75;
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+  .text-highlight {
+    color: #1D9E75;
+    font-weight: 700;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <!-- Heading -->
+  <div class="text-center mb-5">
+    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 mb-3 fw-semibold">
+      Healthy & Authentic Subscriptions
+    </span>
+    <h1 class="fw-extrabold display-5 mb-3" style="font-family: 'Outfit', sans-serif; font-weight: 800;">
+      South Indian Meal <span class="text-success">Plans</span>
+    </h1>
+    <p class="text-muted mx-auto" style="max-width: 600px; font-size: 1.05rem;">
+      Fresh, home-cooked daily meals prepared with high-quality ingredients and delivered hot to your doorstep. Choose a plan that fits your schedule.
+    </p>
+  </div>
+
+  <!-- Subscription Pricing Cards -->
+  <div class="row g-4 mb-5 justify-content-center">
+    
+    <!-- Daily Trial -->
+    <div class="col-md-4">
+      <div class="pricing-card p-4 h-100 d-flex flex-column">
+        <div>
+          <span class="card-pill">Single Pack</span>
+          <h3 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">Daily Trial</h3>
+          <p class="text-muted small mb-4">Perfect to taste our service</p>
+          <div class="d-flex align-items-baseline mb-4">
+            <span class="fs-1 fw-extrabold text-success" style="font-weight: 800;">₹120</span>
+            <span class="text-muted ms-2">/ day</span>
+          </div>
+          <hr class="my-4" style="border-color: #e2e8f0;">
+          <ul class="checkmark-list mb-4">
+            <li>Breakfast, Lunch & Dinner</li>
+            <li>Hot door-step delivery</li>
+            <li>Steamed & low-oil preparations</li>
+            <li>No recurring commitment</li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if request.user.is_authenticated %}
+            <button class="btn btn-outline-subscribe w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" data-plan="Daily Trial" data-price="₹120" data-plan-id="trial">
+              Order Trial Pack
+            </button>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn btn-outline-subscribe w-100 text-center">Sign Up to Order</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Plan -->
+    <div class="col-md-4">
+      <div class="pricing-card popular p-4 h-100 d-flex flex-column">
+        <div class="popular-badge">Best Choice</div>
+        <div>
+          <span class="card-pill">Weekly Pack</span>
+          <h3 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">7-Day Plan</h3>
+          <p class="text-muted small mb-4">Ideal for students & hostellers</p>
+          <div class="d-flex align-items-baseline mb-4">
+            <span class="fs-1 fw-extrabold text-success" style="font-weight: 800;">₹800</span>
+            <span class="text-muted ms-2">/ week</span>
+          </div>
+          <hr class="my-4" style="border-color: #e2e8f0;">
+          <ul class="checkmark-list mb-4">
+            <li>Full 7 Days of Meals</li>
+            <li>Free delivery scheduled daily</li>
+            <li>Veg / Non-Veg choices</li>
+            <li>Change address anytime</li>
+            <li>Pause subscription allowed</li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if request.user.is_authenticated %}
+            <button class="btn btn-subscribe w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" data-plan="7-Day Value Plan" data-price="₹800" data-plan-id="weekly">
+              Subscribe Now
+            </button>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn btn-subscribe w-100 text-center">Sign Up to Subscribe</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Plan -->
+    <div class="col-md-4">
+      <div class="pricing-card p-4 h-100 d-flex flex-column">
+        <div>
+          <span class="card-pill">Monthly Saver</span>
+          <h3 class="fw-bold mb-1" style="font-family: 'Outfit', sans-serif;">30-Day Plan</h3>
+          <p class="text-muted small mb-4">Complete hassle-free month</p>
+          <div class="d-flex align-items-baseline mb-4">
+            <span class="fs-1 fw-extrabold text-success" style="font-weight: 800;">₹3,000</span>
+            <span class="text-muted ms-2">/ month</span>
+          </div>
+          <hr class="my-4" style="border-color: #e2e8f0;">
+          <ul class="checkmark-list mb-4">
+            <li>30 Days of premium meals</li>
+            <li>Save up to ₹600 compared to daily</li>
+            <li>Free delivery & priority schedule</li>
+            <li>Complimentary sweet dessert on Sundays</li>
+            <li>Dedicated WhatsApp support</li>
+          </ul>
+        </div>
+        <div class="mt-auto">
+          {% if request.user.is_authenticated %}
+            <button class="btn btn-outline-subscribe w-100" data-bs-toggle="modal" data-bs-target="#confirmModal" data-plan="30-Day Premium Saver" data-price="₹3,000" data-plan-id="monthly">
+              Subscribe & Save
+            </button>
+          {% else %}
+            <a href="{% url 'register' %}" class="btn btn-outline-subscribe w-100 text-center">Sign Up to Subscribe</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Subscription Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow">
+      <div class="modal-header border-bottom-0 pb-0">
+        <h5 class="modal-title fw-bold text-success" id="confirmModalLabel">Confirm Plan Subscription</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-3">
+        <div class="bg-success bg-opacity-10 rounded-3 p-3 mb-3 text-center">
+          <p class="mb-1 text-secondary small text-uppercase fw-bold">Selected Plan</p>
+          <h4 class="fw-bold mb-0 text-success" id="modal-plan-name">Weekly Pack</h4>
+          <span class="fs-5 fw-semibold text-dark mt-1 d-block" id="modal-plan-price">₹800</span>
+        </div>
+        <p class="small text-muted mb-3">
+          Our online payment portal is currently running in test sandbox mode. Clicking the button below will simulate a checkout session and redirect you back with your profile updated.
+        </p>
+        <div class="form-check mb-2">
+          <input class="form-check-input" type="checkbox" id="mockAgree" checked disabled>
+          <label class="form-check-label small text-secondary" for="mockAgree">
+            I agree to activate the selected South Indian meal plan.
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer border-top-0 pt-0">
+        <button type="button" class="btn btn-outline-secondary btn-sm px-3 rounded-pill" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success btn-sm px-4 rounded-pill fw-semibold" id="btn-mock-checkout">Proceed to Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const confirmModal = document.getElementById('confirmModal');
+    if (confirmModal) {
+      confirmModal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const planName = button.getAttribute('data-plan');
+        const planPrice = button.getAttribute('data-price');
+        const planId = button.getAttribute('data-plan-id');
+        
+        document.getElementById('modal-plan-name').textContent = planName;
+        document.getElementById('modal-plan-price').textContent = planPrice;
+        document.getElementById('btn-mock-checkout').setAttribute('data-plan-id', planId);
+      });
+    }
+
+    const btnMockCheckout = document.getElementById('btn-mock-checkout');
+    if (btnMockCheckout) {
+      btnMockCheckout.addEventListener('click', function() {
+        const planId = this.getAttribute('data-plan-id');
+        if (planId) {
+          window.location.href = "/create-checkout-session/" + planId + "/";
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

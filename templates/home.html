@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block title %}MealFlow – Healthy South Indian Meals{% endblock %}
+{% block extra_css %}
+<style>
+  .hero-section {
+    background: linear-gradient(180deg, #eefcf2 0%, #ffffff 100%);
+    padding: 7rem 0 5rem 0;
+  }
+
+  .section-spacing {
+    padding: 6rem 0;
+    margin: 2rem 0;
+  }
+
+  .card-custom {
+    border: 1px solid #e2ebd9 !important;
+    border-radius: 16px !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .card-custom:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(25, 135, 84, 0.08) !important;
+    border-color: #198754 !important;
+  }
+
+  .accent-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    background-color: #e8f7ee;
+    color: #198754;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .review-card {
+    border: 1px solid #eef2eb !important;
+    border-radius: 16px !important;
+    background-color: #ffffff;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .btn-custom {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(25, 135, 84, 0.15) !important;
+  }
+</style>
+{% endblock %}
+{% block content %}
+
+<section class="hero-section text-center" id="hero">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <h1 class="display-4 fw-bold text-success mb-3">MealFlow</h1>
+        <span
+          class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 mb-3 fw-semibold">
+          Let Your Meal Flow..
+        </span>
+        <h2 class="h3 text-secondary mb-4">Subscription-Based South Indian Meal Delivery Platform</h2>
+        <p class="lead text-secondary mb-5" style="font-size: 1.15rem; line-height: 1.7;">
+          A simple, automated digital scheduling solution built for hostel students, PG residents, and busy working
+          professionals. Order traditional, home-style breakfast, lunch, and dinner delivered fresh to your doorstep
+          daily.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+          <a href="{% url 'plans' %}" class="btn btn-success btn-lg btn-custom px-5 py-3 rounded-pill fw-semibold">
+            View Meal Plans
+          </a>
+          <a href="{% url 'register' %}"
+            class="btn btn-outline-success btn-lg btn-custom px-5 py-3 rounded-pill fw-semibold">
+            Create Account
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section-spacing bg-white" id="how-it-works">
+  <div class="container">
+    <div class="text-center mb-5 pb-2">
+      <h3 class="display-6 fw-bold text-dark">How It Works</h3>
+      <p class="text-secondary mx-auto fs-5" style="max-width: 500px;">
+        Get hot meals automated in four simple steps.
+      </p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card h-100 card-custom p-4 shadow-sm">
+          <div class="card-body text-center">
+            <div class="accent-badge">01</div>
+            <h5 class="fw-bold mb-3">Choose a Plan</h5>
+            <p class="text-secondary small mb-0">Select from Daily Trial, Weekly (7-Day), or Monthly (30-Day)
+              subscription packages.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 card-custom p-4 shadow-sm">
+          <div class="card-body text-center">
+            <div class="accent-badge">02</div>
+            <h5 class="fw-bold mb-3">Set Address</h5>
+            <p class="text-secondary small mb-0">Provide your address coordinates and pincode. We remember this for all
+              deliveries.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 card-custom p-4 shadow-sm">
+          <div class="card-body text-center">
+            <div class="accent-badge">03</div>
+            <h5 class="fw-bold mb-3">Cooking Fresh</h5>
+            <p class="text-secondary small mb-0">Our kitchen prepares hygienic, traditional South Indian meals every
+              morning.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card h-100 card-custom p-4 shadow-sm">
+          <div class="card-body text-center">
+            <div class="accent-badge">04</div>
+            <h5 class="fw-bold mb-3">Door Delivery</h5>
+            <p class="text-secondary small mb-0">Get hot meals delivered directly to your pincode on schedule daily.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section-spacing bg-light border-top border-bottom" id="testimonials">
+  <div class="container">
+    <div class="text-center mb-5 pb-2">
+      <h3 class="display-6 fw-bold text-dark">User Reviews</h3>
+      <p class="text-secondary fs-5">Read what other students and professionals say about MealFlow.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 review-card p-4 shadow-sm">
+          <div class="card-body">
+            <p class="text-dark small fst-italic mb-4">
+              "Being in a hostel makes eating fresh home food difficult. MealFlow is very affordable and delivers hot
+              breakfast and lunch on time daily."
+            </p>
+            <hr class="text-muted">
+            <h6 class="fw-bold mb-1">Ananya R.</h6>
+            <span class="text-secondary small">Engineering Student, Chennai</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 review-card p-4 shadow-sm">
+          <div class="card-body">
+            <p class="text-dark small fst-italic mb-4">
+              "Highly recommended for corporate workers. The food is less oily and portion sizes are perfect for daily
+              lunch."
+            </p>
+            <hr class="text-muted">
+            <h6 class="fw-bold mb-1">Karthik M.</h6>
+            <span class="text-secondary small">Software Developer, Bengaluru</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 review-card p-4 shadow-sm">
+          <div class="card-body">
+            <p class="text-dark small fst-italic mb-4">
+              "The monthly saver subscription pricing is very cost-effective. Customer support responds quickly if there
+              is any delay."
+            </p>
+            <hr class="text-muted">
+            <h6 class="fw-bold mb-1">Priya S.</h6>
+            <span class="text-secondary small">PG Resident, Hyderabad</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<footer class="bg-dark text-light pt-5 pb-4" id="footer">
+  <div class="container">
+    <div class="row g-4 py-4">
+      <div class="col-lg-4 col-md-6">
+        <h5 class="fw-bold text-success mb-3 fs-4">MealFlow</h5>
+        <p class="text-secondary small" style="line-height: 1.6;">
+          An academic mini-project demonstrating subscription tracking, dynamic weekday menu scheduling, and mock
+          payment gateway integration.
+        </p>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="text-success text-uppercase fw-bold small mb-3">Quick Links</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><a href="#hero" class="text-secondary text-decoration-none small">Home</a></li>
+          <li class="mb-2"><a href="#how-it-works" class="text-secondary text-decoration-none small">How It Works</a>
+          </li>
+          <li class="mb-2"><a href="#testimonials" class="text-secondary text-decoration-none small">Reviews</a></li>
+          <li class="mb-2"><a href="{% url 'plans' %}" class="text-secondary text-decoration-none small">Meal Plans</a>
+          </li>
+          <li class="mb-2"><a href="{% url 'contact_us' %}" class="text-secondary text-decoration-none small">Contact
+              Us</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-2 col-md-3 col-6">
+        <h6 class="text-success text-uppercase fw-bold small mb-3">Support</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="mb-2"><a href="{% url 'faq' %}" class="text-secondary text-decoration-none small">FAQ</a></li>
+          <li class="mb-2"><a href="{% url 'dashboard' %}" class="text-secondary text-decoration-none small">My
+              Account</a></li>
+          <li class="mb-2"><a href="{% url 'privacy_policy' %}"
+              class="text-secondary text-decoration-none small">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <h6 class="text-success text-uppercase fw-bold small mb-3">Contact Us</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="d-flex align-items-center gap-2 mb-2 text-secondary small">
+            <i class="bi bi-envelope-fill text-success"></i> hello@mealflow.in
+          </li>
+          <li class="d-flex align-items-center gap-2 mb-2 text-secondary small">
+            <i class="bi bi-telephone-fill text-success"></i> +91 98400 00000
+          </li>
+          <li class="d-flex align-items-start gap-2 text-secondary small">
+            <i class="bi-geo-alt-fill text-success mt-1"></i> Serving Chennai, Bengaluru &amp; Hyderabad
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="border-secondary mt-4 mb-3" />
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 pt-2">
+      <small class="text-secondary">© 2026 MealFlow. All rights reserved.</small>
+      <a href="{% url 'plans' %}" class="btn btn-success btn-sm rounded px-3">
+        Order Today <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+{% endblock %}

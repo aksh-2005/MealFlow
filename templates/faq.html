@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Frequently Asked Questions – MealFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f7faf8;
+  }
+  .accordion-button:not(.collapsed) {
+    background-color: #f0faf5;
+    color: #1D9E75;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+  }
+  .accordion-button:focus {
+    border-color: #1D9E75;
+    box-shadow: 0 0 0 0.25rem rgba(29, 158, 117, 0.25);
+  }
+  .faq-header {
+    background: linear-gradient(135deg, #1D9E75, #146e52);
+    color: white;
+    padding: 60px 0;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 50px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- FAQ Banner -->
+<div class="faq-header text-center">
+  <div class="container">
+    <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-semibold">
+      Help Center
+    </span>
+    <h1 class="fw-extrabold display-5 mb-0" style="font-family: 'Outfit', sans-serif; font-weight: 800;">
+      Frequently Asked Questions
+    </h1>
+    <p class="lead opacity-75 mt-2 mb-0">Everything you need to know about MealFlow subscriptions</p>
+  </div>
+</div>
+
+<div class="container py-4" style="max-width: 800px;">
+  <div class="accordion accordion-flush shadow-sm rounded-4 border overflow-hidden bg-white" id="faqAccordion">
+
+    <!-- FAQ 1 -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingOne">
+        <button class="accordion-button fw-semibold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          What delivery slots are available?
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+        <div class="accordion-body text-secondary lh-lg">
+          We deliver three times a day to ensure your meals are fresh and hot.
+          <ul>
+            <li><strong>Breakfast:</strong> 8:00 AM - 9:30 AM</li>
+            <li><strong>Lunch:</strong> 12:30 PM - 2:00 PM</li>
+            <li><strong>Dinner:</strong> 7:30 PM - 9:00 PM</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 2 -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingTwo">
+        <button class="accordion-button collapsed fw-semibold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Can I change my address or meal preference?
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+        <div class="accordion-body text-secondary lh-lg">
+          Yes! You can update your delivery address or switch between <strong>Veg</strong> and <strong>Non-Veg</strong> preferences directly from your account dashboard. Address updates apply immediately, while diet changes take effect starting with the next day's menu.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 3 -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingThree">
+        <button class="accordion-button collapsed fw-semibold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          How do pre-paid subscriptions work?
+        </button>
+      </h2>
+      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+        <div class="accordion-body text-secondary lh-lg">
+          MealFlow offers three prepaid options: Daily Trial, 7-Day Value Plan, and the 30-Day Premium Saver. Once payment is made via Stripe, your subscription is activated immediately, and the remaining days will decrement daily on your dashboard.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 4 -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFour">
+        <button class="accordion-button collapsed fw-semibold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          What happens when my subscription runs out of days?
+        </button>
+      </h2>
+      <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#faqAccordion">
+        <div class="accordion-body text-secondary lh-lg">
+          Your dashboard will show the status "Inactive". You will no longer see the daily menu, and deliveries will pause automatically. You can easily select a new plan to resume service anytime.
+        </div>
+      </div>
+    </div>
+
+    <!-- FAQ 5 -->
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="headingFive">
+        <button class="accordion-button collapsed fw-semibold py-4" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+          Is the payment portal secure?
+        </button>
+      </h2>
+      <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#faqAccordion">
+        <div class="accordion-body text-secondary lh-lg">
+          Absolutely. All payments are securely routed and processed directly by Stripe Checkout. MealFlow never stores your credit card details or billing credentials on our servers.
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="text-center mt-5 mb-5">
+    <p class="text-muted">Still have questions?</p>
+    <a href="{% url 'contact_us' %}" class="btn btn-success rounded-pill px-4 fw-semibold" style="background-color: #1D9E75; border-color: #1D9E75;">
+      Contact Support <i class="bi bi-chat-dots ms-2"></i>
+    </a>
+  </div>
+</div>
+{% endblock %}

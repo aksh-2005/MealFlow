@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Privacy Policy – MealFlow{% endblock %}
+
+{% block extra_css %}
+<style>
+  body {
+    background-color: #f7faf8;
+  }
+  .policy-card {
+    background: white;
+    border: 1px solid #e2ebd5;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(29, 158, 117, 0.05);
+  }
+  .policy-header {
+    background: linear-gradient(135deg, #1D9E75, #146e52);
+    color: white;
+    padding: 60px 0;
+    border-radius: 0 0 30px 30px;
+    margin-bottom: 50px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Privacy Banner -->
+<div class="policy-header text-center">
+  <div class="container">
+    <span class="badge bg-white bg-opacity-25 text-white border border-white border-opacity-25 rounded-pill px-3 py-2 mb-3 fw-semibold">
+      Legal & Compliance
+    </span>
+    <h1 class="fw-extrabold display-5 mb-0" style="font-family: 'Outfit', sans-serif; font-weight: 800;">
+      Privacy Policy
+    </h1>
+    <p class="lead opacity-75 mt-2 mb-0">Effective Date: June 10, 2026</p>
+  </div>
+</div>
+
+<div class="container py-4" style="max-width: 800px;">
+  <div class="policy-card p-4 p-md-5 mb-5 text-secondary">
+    
+    <h2 class="h4 fw-bold text-dark mb-3">1. Introduction</h2>
+    <p class="lh-lg mb-4">
+      Welcome to MealFlow. We are committed to protecting your personal information and your right to privacy. This privacy policy explains what information we collect, how we use it, and what rights you have in relation to it.
+    </p>
+
+    <h2 class="h4 fw-bold text-dark mb-3">2. Information We Collect</h2>
+    <p class="lh-lg mb-3">
+      We collect personal information that you voluntarily provide to us when you register on our platform. This includes:
+    </p>
+    <ul class="lh-lg mb-4">
+      <li><strong>Personal Credentials:</strong> Username, password hash, and full name.</li>
+      <li><strong>Contact Metadata:</strong> Email addresses and phone numbers.</li>
+      <li><strong>Delivery Information:</strong> Full physical addresses and 6-digit delivery pincodes.</li>
+      <li><strong>Preferences:</strong> Diet categories (Veg, Non-Veg).</li>
+    </ul>
+
+    <h2 class="h4 fw-bold text-dark mb-3">3. How We Use Your Information</h2>
+    <p class="lh-lg mb-3">
+      We use personal information collected via our platform for a variety of business purposes, including:
+    </p>
+    <ul class="lh-lg mb-4">
+      <li>To facilitate account creation, authentication, and login processes.</li>
+      <li>To deliver hot meals to your specified address.</li>
+      <li>To process checkout sessions and subscriptions dynamically through our billing gateways.</li>
+      <li>To evaluate customer inquiries, ratings, and issue reports.</li>
+    </ul>
+
+    <h2 class="h4 fw-bold text-dark mb-3">4. Stripe Integration & Payment Safety</h2>
+    <p class="lh-lg mb-4">
+      We utilize Stripe as our third-party checkout provider. When you subscribe to a meal plan, your payment information is entered directly into Stripe's secure portal. MealFlow does not collect, record, or store any card numbers, cardholder verification values (CVV), or bank details.
+    </p>
+
+    <h2 class="h4 fw-bold text-dark mb-3">5. Data Retention & Deletion</h2>
+    <p class="lh-lg mb-4">
+      We will only keep your personal information for as long as it is necessary for the purposes set out in this privacy policy, unless a longer retention period is required by law. Users can contact our customer support team to request deletion of their account records.
+    </p>
+
+    <div class="pt-4 border-top text-center mt-5">
+      <p class="small text-muted mb-0">For privacy inquiries, reach out to hello@mealflow.in</p>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

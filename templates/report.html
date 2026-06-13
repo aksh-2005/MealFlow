@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+  body { background-color: #f8fff9; }
+  .issue-card { background: white; border: 1px solid #e8f5e9; border-radius: 16px; }
+  .issue-option { border: 1px solid #e8f5e9; border-radius: 12px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
+  .issue-option:hover { border-color: #1D9E75; background: #f0faf5; }
+  .issue-option input { accent-color: #1D9E75; }
+</style>
+
+<div class="container py-4" style="max-width: 500px;">
+
+  <!-- Back -->
+  <a href="{% url 'dashboard' %}" class="btn btn-outline-success btn-sm mb-4">
+    <i class="bi bi-arrow-left"></i> Back to Dashboard
+  </a>
+
+  <!-- Title -->
+  <h5 class="fw-semibold mb-1">Report an Issue</h5>
+  <p class="text-muted small mb-4">We'll look into it and get back to you</p>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success rounded-3 small">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- Issue Type -->
+    <div class="issue-card p-4 mb-3">
+      <div class="fw-semibold small mb-3">Issue Type</div>
+
+      <label class="issue-option d-flex align-items-start gap-3 w-100">
+        <input type="radio" name="issue" value="wrong_meal" class="mt-1" required>
+        <div>
+          <div class="small fw-semibold">Wrong Meal Delivered</div>
+          <small class="text-muted">Received a different meal than ordered</small>
+        </div>
+      </label>
+
+      <label class="issue-option d-flex align-items-start gap-3 w-100">
+        <input type="radio" name="issue" value="late_delivery" class="mt-1" required>
+        <div>
+          <div class="small fw-semibold">Late Delivery</div>
+          <small class="text-muted">Meal arrived later than expected</small>
+        </div>
+      </label>
+
+      <label class="issue-option d-flex align-items-start gap-3 w-100">
+        <input type="radio" name="issue" value="quality" class="mt-1" required>
+        <div>
+          <div class="small fw-semibold">Food Quality Issue</div>
+          <small class="text-muted">Food was stale, cold or unsatisfactory</small>
+        </div>
+      </label>
+
+      <label class="issue-option d-flex align-items-start gap-3 w-100">
+        <input type="radio" name="issue" value="missing_item" class="mt-1" required>
+        <div>
+          <div class="small fw-semibold">Missing Item</div>
+          <small class="text-muted">Something was missing from the meal</small>
+        </div>
+      </label>
+
+      <label class="issue-option d-flex align-items-start gap-3 w-100" style="margin-bottom:0;">
+        <input type="radio" name="issue" value="other" class="mt-1" required>
+        <div>
+          <div class="small fw-semibold">Other</div>
+          <small class="text-muted">Something else went wrong</small>
+        </div>
+      </label>
+    </div>
+
+    <!-- Description -->
+    <div class="issue-card p-4 mb-4">
+      <div class="fw-semibold small mb-2">Description <span class="text-muted fw-normal">(required)</span></div>
+      <textarea name="description" class="form-control border-0 small" rows="3"
+        placeholder="Tell us more about the issue..."
+        style="background:#f8fff9; resize:none; outline:none; box-shadow:none;" required></textarea>
+    </div>
+
+    <button type="submit" class="btn w-100 text-white fw-semibold rounded-3" style="background:#1D9E75;">
+      Submit Report
+    </button>
+
+  </form>
+
+</div>
+
+{% endblock %}
