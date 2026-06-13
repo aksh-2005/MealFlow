@@ -27,7 +27,7 @@ A full-stack **meal subscription management platform** built with Django. Users 
 | Payments    | Stripe Checkout                   |
 | Admin UI    | Django Unfold                     |
 | Static Files| WhiteNoise                        |
-| Deployment  | —                                 |
+| Deployment  | Vercel (Serverless Python)        |
 
 ---
 
@@ -108,6 +108,22 @@ Visit **http://localhost:8000** in your browser.
 
 ---
 
+## 🚀 Deploy to Vercel
+
+1. **Install Vercel CLI** (or connect your GitHub repository to Vercel):
+   * If using GitHub, import the repository on the [Vercel Dashboard](https://vercel.com/dashboard).
+2. Configure **Environment Variables** in the Vercel project settings:
+   * `SECRET_KEY` (Generate a secure Django key)
+   * `DEBUG` (`False`)
+   * `DATABASE_URL` (Your Supabase connection string)
+   * `STRIPE_SECRET_KEY` (Your Stripe test/live secret key)
+   * `STRIPE_PUBLISHABLE_KEY` (Your Stripe test/live publishable key)
+   * `ALLOWED_HOSTS` (e.g. `mealflow.vercel.app` or `*`)
+   * `CSRF_TRUSTED_ORIGINS` (e.g. `https://mealflow.vercel.app`)
+3. Vercel will build and run the Django app using the configuration in `vercel.json` and `build_files.sh`.
+
+---
+
 ## 📁 Project Structure
 
 ```
@@ -123,6 +139,8 @@ Visit **http://localhost:8000** in your browser.
 │   ├── utils.py         # Dashboard callback utilities
 │   └── tests.py         # Unit tests
 ├── templates/           # HTML templates
+├── vercel.json          # Vercel deployment configuration
+├── build_files.sh       # Vercel dependency/static build script
 ├── requirements.txt     # Python dependencies
 └── manage.py
 ```
