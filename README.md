@@ -2,6 +2,8 @@
 
 A full-stack **meal subscription management platform** built with Django. Users can register, choose meal plans (Veg/Non-Veg), subscribe via Stripe payments, manage their profiles, and view weekly menus. Includes an admin dashboard powered by Django Unfold.
 
+**Live Demo:** [https://mealflow-web.vercel.app/](https://mealflow-web.vercel.app/)
+
 ---
 
 ## ✨ Features
@@ -118,8 +120,8 @@ Visit **http://localhost:8000** in your browser.
    * `DATABASE_URL` (Your Supabase connection string)
    * `STRIPE_SECRET_KEY` (Your Stripe test/live secret key)
    * `STRIPE_PUBLISHABLE_KEY` (Your Stripe test/live publishable key)
-   * `ALLOWED_HOSTS` (e.g. `mealflow.vercel.app` or `*`)
-   * `CSRF_TRUSTED_ORIGINS` (e.g. `https://mealflow.vercel.app`)
+   * `ALLOWED_HOSTS` (e.g. `mealflow-web.vercel.app` or `*`)
+   * `CSRF_TRUSTED_ORIGINS` (e.g. `https://mealflow-web.vercel.app`)
 3. Vercel will build and run the Django app using the configuration in `vercel.json` and `build_files.sh`.
 
 ---
