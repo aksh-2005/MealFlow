@@ -39,3 +39,8 @@ urlpatterns = [
     path('faq/', views.faq, name='faq'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
 ]
+
+handler404 = 'myapp.views.custom_404'
+handler500 = 'myapp.views.custom_500'
+handler403 = 'myapp.views.custom_403'
+handler400 = 'myapp.views.custom_400'
