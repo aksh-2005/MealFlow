@@ -1,5 +1,6 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
+from django.utils import timezone
 from .models import *
 
 
@@ -72,7 +73,17 @@ class SubscriberInfoAdmin(ModelAdmin):
     list_filter = ('plan_name', 'subscription_active')
 
     def get_queryset(self, request):
-        return super().get_queryset(request).filter(subscription_active=True)
+        return super().get_queryset(request).filter(
+            subscription_active=True,
+            subscription_expiry__gte=timezone.localdate()
+        )
+
+
+@admin.register(ProcessedPayment)
+class ProcessedPaymentAdmin(ModelAdmin):
+    list_display = ['user', 'stripe_session_id', 'plan_id', 'amount', 'created_at']
+    search_fields = ('user__username', 'stripe_session_id')
+    list_filter = ('plan_id', 'created_at')
 
 
 @admin.register(Enquiry)

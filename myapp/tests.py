@@ -174,3 +174,84 @@ class MealFlowTests(TestCase):
         # Edit preference redirects, check status code is 302
         response = self.client.get(reverse('edit_meal_preference'))
         self.assertEqual(response.status_code, 302)
+
+    def test_registration_invalid_phone_fails(self):
+        response = self.client.post(reverse('register'), {
+            'full_name': 'New User',
+            'username': 'phoneuser',
+            'email': 'phone@example.com',
+            'phone': '12345',  # Too short
+            'address': '456 New St',
+            'pincode': '600002',
+            'meal_preference': 'Non-Veg',
+            'password': 'newpassword123'
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.context)
+        self.assertEqual(response.context['error'], 'Enter a valid 10 to 15 digit phone number.')
+
+        # Non-digits phone
+        response2 = self.client.post(reverse('register'), {
+            'full_name': 'New User',
+            'username': 'phoneuser2',
+            'email': 'phone2@example.com',
+            'phone': '123456789abc',  # Has letters
+            'address': '456 New St',
+            'pincode': '600002',
+            'meal_preference': 'Non-Veg',
+            'password': 'newpassword123'
+        })
+        self.assertEqual(response2.status_code, 200)
+        self.assertIn('error', response2.context)
+        self.assertEqual(response2.context['error'], 'Enter a valid 10 to 15 digit phone number.')
+
+    @patch('stripe.checkout.Session.retrieve')
+    def test_payment_success_stacks_expiry(self, mock_retrieve):
+        from myapp.models import ProcessedPayment
+        from django.utils import timezone
+        
+        self.client.login(username='testuser', password='testpassword123')
+
+        # 1. Establish an initial active subscription expiring in 5 days
+        today = timezone.localdate()
+        self.profile.subscription_active = True
+        self.profile.subscription_expiry = today + datetime.timedelta(days=5)
+        self.profile.save()
+
+        class MockSession:
+            payment_status = 'paid'
+            metadata = {'user_id': 1, 'plan_id': 'weekly'}
+
+        MockSession.metadata['user_id'] = self.user.id
+        mock_retrieve.return_value = MockSession()
+
+        # 2. Complete payment success for a weekly plan (7 days)
+        response = self.client.get(reverse('payment_success') + '?session_id=cs_test_stacking')
+        self.assertEqual(response.status_code, 200)
+
+        # 3. Verify the expiry is today + 5 days + 7 days = today + 12 days
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.subscription_active)
+        self.assertEqual(self.profile.subscription_expiry, today + datetime.timedelta(days=12))
+
+    @patch('stripe.checkout.Session.retrieve')
+    def test_payment_success_replay_protection(self, mock_retrieve):
+        from myapp.models import ProcessedPayment
+        self.client.login(username='testuser', password='testpassword123')
+
+        # Create processed payment in DB
+        ProcessedPayment.objects.create(
+            stripe_session_id='cs_test_replay',
+            user=self.user,
+            plan_id='weekly',
+            amount=800
+        )
+
+        # If Stripe is called, it would crash because we'll make it raise an error
+        mock_retrieve.side_effect = Exception("Should not call Stripe API")
+
+        # Re-trigger success page with replay session
+        response = self.client.get(reverse('payment_success') + '?session_id=cs_test_replay')
+        self.assertEqual(response.status_code, 200)
+        # Should render successful layout and not raise/crash
+        self.assertContains(response, "Payment Successful!")

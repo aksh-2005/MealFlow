@@ -7,6 +7,7 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.urls import reverse
+from django.utils import timezone
 
 import stripe
 from django.conf import settings
@@ -158,6 +159,23 @@ def register(request):
                 }
             )
 
+        # Validate phone format
+        clean_phone = phone.strip() if phone else ""
+        if not clean_phone.isdigit() or not (10 <= len(clean_phone) <= 15):
+            return render(
+                request,
+                'register.html',
+                {
+                    'error': 'Enter a valid 10 to 15 digit phone number.',
+                    'full_name': full_name,
+                    'username': username,
+                    'email': email,
+                    'phone': phone,
+                    'address': address,
+                    'meal_preference': meal_preference,
+                }
+            )
+
         # Check username
         if User.objects.filter(username=username).exists():
             return render(
@@ -237,15 +255,16 @@ def dashboard(request):
 
     # Calculate days left dynamically
     days_left = 0
+    today = timezone.localdate()
     if profile.subscription_active and profile.subscription_expiry:
-        if profile.subscription_expiry >= datetime.date.today():
-            days_left = (profile.subscription_expiry - datetime.date.today()).days
+        if profile.subscription_expiry >= today:
+            days_left = (profile.subscription_expiry - today).days
         else:
             profile.subscription_active = False
             profile.save()
 
     # Get current weekday dynamically
-    current_day = datetime.datetime.now().strftime('%A')
+    current_day = timezone.localdate().strftime('%A')
 
     weekly_menu = get_weekly_menu(profile.meal_preference)
 
@@ -480,6 +499,32 @@ def payment_success(request):
         messages.error(request, "No Stripe session ID provided.")
         return redirect('plans')
 
+    # Get user profile safely
+    profile, _ = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            'first_name': request.user.first_name or request.user.username,
+            'email': request.user.email or '',
+            'phone': '',
+            'address': 'No address provided',
+            'pincode': '000000',
+            'meal_preference': 'Veg',
+        }
+    )
+
+    # Check database to prevent replay attacks across different devices/sessions
+    db_payment = ProcessedPayment.objects.filter(stripe_session_id=session_id).first()
+    if db_payment:
+        plan = PLAN_DETAILS.get(db_payment.plan_id)
+        context = {
+            'plan_name': plan['name'] if plan else db_payment.plan_id,
+            'price': db_payment.amount,
+            'days': plan['days'] if plan else 0,
+            'expiry': profile.subscription_expiry,
+            'session_id': session_id,
+        }
+        return render(request, 'payment_success.html', context)
+
     # Check if already processed in request session to avoid duplicate Stripe API calls and saves
     session_key = f"processed_stripe_{session_id}"
     if request.session.get(session_key):
@@ -514,23 +559,27 @@ def payment_success(request):
             messages.error(request, "Invalid plan in payment session.")
             return redirect('plans')
 
-        # Update User Profile
-        profile, _ = UserProfile.objects.get_or_create(
-            user=request.user,
-            defaults={
-                'first_name': request.user.first_name or request.user.username,
-                'email': request.user.email or '',
-                'phone': '',
-                'address': 'No address provided',
-                'pincode': '000000',
-                'meal_preference': 'Veg',
-            }
-        )
+        # Update User Profile with subscription stacking
         profile.plan_name = plan['name']
         profile.subscription_active = True
-        profile.subscription_expiry = datetime.date.today() + datetime.timedelta(days=plan['days'])
+        
+        today = timezone.localdate()
+        if profile.subscription_expiry and profile.subscription_expiry >= today:
+            start_date = profile.subscription_expiry
+        else:
+            start_date = today
+            
+        profile.subscription_expiry = start_date + datetime.timedelta(days=plan['days'])
         profile.last_amount_paid = plan['price']
         profile.save()
+
+        # Record payment in DB
+        ProcessedPayment.objects.create(
+            stripe_session_id=session_id,
+            user=request.user,
+            plan_id=plan_id,
+            amount=plan['price']
+        )
 
         # Cache processed session info
         request.session[session_key] = {
@@ -567,6 +616,13 @@ def contact_us(request):
 
         if not name or not email or not message:
             messages.error(request, 'Please fill in all required fields.')
+            return render(request, 'contact.html', {
+                'name': name,
+                'email': email,
+                'phone': phone,
+                'subject': subject,
+                'message': message,
+            })
         else:
             Enquiry.objects.create(
                 name=name,

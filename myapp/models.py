@@ -104,6 +104,17 @@ class SubscriberInfo(UserProfile):
         verbose_name_plural = 'Subscribers'
 
 
+class ProcessedPayment(models.Model):
+    stripe_session_id = models.CharField(max_length=255, unique=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    plan_id = models.CharField(max_length=50)
+    amount = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.stripe_session_id} - {self.amount}"
+
+
 class Enquiry(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()

@@ -123,31 +123,31 @@
             <!-- Name -->
             <div class="col-md-6">
               <label class="form-label small fw-semibold">Your Name <span class="text-danger">*</span></label>
-              <input type="text" name="name" class="form-control rounded-3" placeholder="John Doe" required>
+              <input type="text" name="name" class="form-control rounded-3" placeholder="John Doe" value="{{ name|default:'' }}" required>
             </div>
 
             <!-- Email -->
             <div class="col-md-6">
               <label class="form-label small fw-semibold">Your Email <span class="text-danger">*</span></label>
-              <input type="email" name="email" class="form-control rounded-3" placeholder="john@example.com" required>
+              <input type="email" name="email" class="form-control rounded-3" placeholder="john@example.com" value="{{ email|default:'' }}" required>
             </div>
 
             <!-- Phone -->
             <div class="col-md-6">
               <label class="form-label small fw-semibold">Phone Number <span class="text-muted">(optional)</span></label>
-              <input type="tel" name="phone" class="form-control rounded-3" placeholder="+91 98765 43210">
+              <input type="tel" name="phone" class="form-control rounded-3" placeholder="+91 98765 43210" value="{{ phone|default:'' }}">
             </div>
 
             <!-- Subject -->
             <div class="col-md-6">
               <label class="form-label small fw-semibold">Subject <span class="text-muted">(optional)</span></label>
-              <input type="text" name="subject" class="form-control rounded-3" placeholder="How can we help?">
+              <input type="text" name="subject" class="form-control rounded-3" placeholder="How can we help?" value="{{ subject|default:'' }}">
             </div>
 
             <!-- Message -->
             <div class="col-12">
               <label class="form-label small fw-semibold">Your Message <span class="text-danger">*</span></label>
-              <textarea name="message" class="form-control rounded-3" rows="5" placeholder="Type your query in detail..." required></textarea>
+              <textarea name="message" class="form-control rounded-3" rows="5" placeholder="Type your query in detail..." required>{{ message|default:'' }}</textarea>
             </div>
 
             <!-- Submit Button -->

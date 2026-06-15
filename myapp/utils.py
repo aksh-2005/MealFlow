@@ -1,11 +1,13 @@
 import json
 from django.contrib.auth.models import User
 from django.db.models import Sum, Count
+from django.utils import timezone
 from .models import UserProfile, ReportIssue, MealReview
 
 def dashboard_callback(request, context):
     
-    active_subscribers = UserProfile.objects.filter(subscription_active=True).count()
+    today = timezone.localdate()
+    active_subscribers = UserProfile.objects.filter(subscription_active=True, subscription_expiry__gte=today).count()
 
     total_payments = UserProfile.objects.aggregate(total=Sum('last_amount_paid'))['total'] or 0
 
