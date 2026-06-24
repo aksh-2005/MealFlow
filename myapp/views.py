@@ -621,23 +621,44 @@ def payment_success(request):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.retrieve(session_id)
 
-        # Convert to plain dictionary to avoid custom class behavior/magic errors
-        if isinstance(session, dict):
-            session_dict = dict(session)
-            metadata = dict(session_dict.get('metadata') or {})
-        else:
-            session_dict = {
-                'payment_status': getattr(session, 'payment_status', None),
-            }
+        # Safely extract attributes from the session object using 'in' operator
+        # or dict conversion to completely bypass custom class get() errors (like KeyError: 'get')
+        payment_status = None
+        metadata = {}
+
+        if hasattr(session, 'payment_status'):
+            payment_status = getattr(session, 'payment_status', None)
+        elif isinstance(session, dict) or hasattr(session, '__getitem__'):
+            try:
+                payment_status = session['payment_status'] if 'payment_status' in session else None
+            except Exception:
+                pass
+
+        if hasattr(session, 'metadata'):
             metadata = getattr(session, 'metadata', None) or {}
+        elif isinstance(session, dict) or hasattr(session, '__getitem__'):
+            try:
+                metadata = session['metadata'] if 'metadata' in session else {}
+            except Exception:
+                pass
 
         # Verify payment status is paid
-        if session_dict.get('payment_status') != 'paid':
+        if payment_status != 'paid':
             messages.error(request, "Payment was not completed successfully.")
             return redirect('plans')
 
-        user_id = metadata.get('user_id')
-        plan_id = metadata.get('plan_id')
+        # Safely extract metadata fields using 'in' operator to avoid KeyError: 'get' on StripeObjects
+        user_id = None
+        plan_id = None
+        if isinstance(metadata, dict) or hasattr(metadata, '__getitem__'):
+            try:
+                user_id = metadata['user_id'] if 'user_id' in metadata else None
+                plan_id = metadata['plan_id'] if 'plan_id' in metadata else None
+            except Exception:
+                pass
+        else:
+            user_id = getattr(metadata, 'user_id', None)
+            plan_id = getattr(metadata, 'plan_id', None)
 
         if not user_id or not plan_id or int(user_id) != request.user.id:
             messages.error(request, "Session verification failed.")
