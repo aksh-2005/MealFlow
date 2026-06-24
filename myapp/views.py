@@ -621,12 +621,21 @@ def payment_success(request):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.retrieve(session_id)
 
+        # Convert to plain dictionary to avoid custom class behavior/magic errors
+        if isinstance(session, dict):
+            session_dict = dict(session)
+            metadata = dict(session_dict.get('metadata') or {})
+        else:
+            session_dict = {
+                'payment_status': getattr(session, 'payment_status', None),
+            }
+            metadata = getattr(session, 'metadata', None) or {}
+
         # Verify payment status is paid
-        if session.payment_status != 'paid':
+        if session_dict.get('payment_status') != 'paid':
             messages.error(request, "Payment was not completed successfully.")
             return redirect('plans')
 
-        metadata = session.metadata
         user_id = metadata.get('user_id')
         plan_id = metadata.get('plan_id')
 
