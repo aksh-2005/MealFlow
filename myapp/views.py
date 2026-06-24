@@ -465,7 +465,15 @@ def create_checkout_session(request, plan_id):
     plan = PLAN_DETAILS[plan_id]
     amount_in_paise = plan['price'] * 100
 
+    # If Stripe keys are not configured, fallback to simulated sandbox checkout
+    if not settings.STRIPE_SECRET_KEY:
+        import time
+        mock_session_id = f"mock_checkout_{plan_id}_{request.user.id}_{int(time.time())}"
+        messages.info(request, "Stripe API keys not found. Simulated sandbox payment initiated.")
+        return redirect(reverse('payment_success') + f'?session_id={mock_session_id}')
+
     try:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
@@ -538,7 +546,79 @@ def payment_success(request):
         }
         return render(request, 'payment_success.html', context)
 
+    # If it is a mock session ID (simulated sandbox checkout)
+    if session_id.startswith('mock_checkout_'):
+        try:
+            parts = session_id.split('_')
+            # Format: mock_checkout_<plan_id>_<user_id>_<timestamp>
+            if len(parts) >= 5:
+                plan_id = parts[2]
+                user_id_str = parts[3]
+            else:
+                messages.error(request, "Invalid mock session ID.")
+                return redirect('plans')
+
+            try:
+                user_id = int(user_id_str)
+            except ValueError:
+                messages.error(request, "Invalid user ID in mock session.")
+                return redirect('plans')
+
+            if user_id != request.user.id:
+                messages.error(request, "Session verification failed.")
+                return redirect('plans')
+
+            plan = PLAN_DETAILS.get(plan_id)
+            if not plan:
+                messages.error(request, "Invalid plan in payment session.")
+                return redirect('plans')
+
+            # Update User Profile with subscription stacking
+            profile.plan_name = plan['name']
+            profile.subscription_active = True
+            
+            today = timezone.localdate()
+            if profile.subscription_expiry and profile.subscription_expiry >= today:
+                start_date = profile.subscription_expiry
+            else:
+                start_date = today
+                
+            profile.subscription_expiry = start_date + datetime.timedelta(days=plan['days'])
+            profile.last_amount_paid = plan['price']
+            profile.save()
+
+            # Record payment in DB
+            ProcessedPayment.objects.create(
+                stripe_session_id=session_id,
+                user=request.user,
+                plan_id=plan_id,
+                amount=plan['price']
+            )
+
+            # Cache processed session info
+            request.session[session_key] = {
+                'plan_name': plan['name'],
+                'price': plan['price'],
+                'days': plan['days'],
+                'expiry': profile.subscription_expiry.strftime('%Y-%m-%d')
+            }
+
+            context = {
+                'plan_name': plan['name'],
+                'price': plan['price'],
+                'days': plan['days'],
+                'expiry': profile.subscription_expiry,
+                'session_id': session_id,
+            }
+            return render(request, 'payment_success.html', context)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            messages.error(request, f"Error processing simulated payment: {str(e)}")
+            return redirect('plans')
+
     try:
+        stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.retrieve(session_id)
 
         # Verify payment status is paid
@@ -599,6 +679,8 @@ def payment_success(request):
         return render(request, 'payment_success.html', context)
 
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         messages.error(request, f"Error processing payment success: {str(e)}")
         return redirect('plans')
 

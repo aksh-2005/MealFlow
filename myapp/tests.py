@@ -255,3 +255,30 @@ class MealFlowTests(TestCase):
         self.assertEqual(response.status_code, 200)
         # Should render successful layout and not raise/crash
         self.assertContains(response, "Payment Successful!")
+
+    def test_create_checkout_session_mock_fallback_when_no_stripe_key(self):
+        # Force Stripe key to be empty to simulate local dev
+        self.client.login(username='testuser', password='testpassword123')
+        
+        with self.settings(STRIPE_SECRET_KEY=''):
+            response = self.client.get(reverse('create_checkout_session', kwargs={'plan_id': 'weekly'}))
+            self.assertEqual(response.status_code, 302)
+            self.assertIn('/payment-success/', response.url)
+            self.assertIn('session_id=mock_checkout_weekly_', response.url)
+
+    def test_payment_success_mock_session_activates_subscription(self):
+        self.client.login(username='testuser', password='testpassword123')
+        
+        mock_sess_id = f"mock_checkout_weekly_{self.user.id}_12345678"
+        response = self.client.get(reverse('payment_success') + f'?session_id={mock_sess_id}')
+        
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Payment Successful!")
+        
+        self.profile.refresh_from_db()
+        self.assertTrue(self.profile.subscription_active)
+        self.assertEqual(self.profile.plan_name, "7-Day Value Plan")
+        
+        # Verify ProcessedPayment was recorded
+        from myapp.models import ProcessedPayment
+        self.assertTrue(ProcessedPayment.objects.filter(stripe_session_id=mock_sess_id).exists())
